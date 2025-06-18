@@ -1,0 +1,71 @@
+# config.yaml
+metadata:
+  info:
+    title: 'Involves Stage API'
+    version: '3.0.3'
+    description: |
+      API completa para gerenciamento de pontos de venda, produtos, colaboradores e pesquisas no Involves Stage.
+    termsOfService: 'https://involves.com/termos-de-uso'
+    contact: { name: 'Suporte Involves', email: 'suporte@involves.com', url: 'https://help.involves.com' }
+    license: { name: 'Proprietary', url: 'https://involves.com/licenca' }
+  servers:
+    - url: 'https://{customerSubdomain}.involves.com/webservices/api'
+      description: 'Servidor de Produção'
+      variables:
+        customerSubdomain: { default: 'sua-empresa', description: 'Subdomínio específico do seu ambiente/cliente.' }
+    - url: 'https://staging.{customerSubdomain}.involves.com/webservices/api'
+      description: 'Servidor de Homologação (Staging)'
+      variables:
+        customerSubdomain: { default: 'sua-empresa', description: 'Subdomínio do seu ambiente de homologação.' }
+
+security_schemes:
+  BasicAuth:
+    type: http
+    scheme: basic
+    description: |
+      🔑 **Autenticação na API**
+      A API utiliza **HTTP Basic Authentication**. As credenciais (`usuario:senha`) devem ser codificadas em Base64 e enviadas no header `Authorization`.
+
+common_schemas:
+  ErrorResponse:
+    type: object
+    description: Resposta padrão para erros na API.
+    properties:
+      error: { type: string, description: 'Código identificador do erro.', example: 'VALIDATION_ERROR' }
+      message: { type: string, description: 'Mensagem legível do erro.', example: 'Dados inválidos.' }
+    required: ['error', 'message']
+
+default_error_responses:
+  BadRequest:
+    description: 'Requisição inválida. Verifique os parâmetros.'
+    content:
+      application/json:
+        schema: { $ref: '#/components/schemas/ErrorResponse' }
+        example:
+          error: 'VALIDATION_ERROR'
+          message: 'O campo "email" é inválido.'
+  Unauthorized: { description: 'Autenticação falhou. Verifique suas credenciais.' }
+  Forbidden: { description: 'Acesso negado. Você não tem permissão.' }
+  NotFound: { description: 'O recurso solicitado não foi encontrado.' }
+  InternalError: { description: 'Ocorreu um erro inesperado no servidor.' }
+
+tag_map:
+  "api.doc.v3.section.pointofsale.title": { "name": "Pontos de Venda", "description": "Operações para gerenciar pontos de venda (PDVs)." }
+  "api.doc.v3.section.product.title": { "name": "Produtos", "description": "Gerenciamento do catálogo de produtos, SKUs, marcas e categorias." }
+  "api.doc.v3.section.employee.title": { "name": "Colaboradores", "description": "Gerenciamento de usuários, perfis de acesso, e equipes de campo." }
+  "api.doc.v3.section.surveys.title": { "name": "Pesquisas", "description": "Endpoints para interagir com formulários e coletas de dados." }
+  "api.doc.v3.section.itinerary-visits.title": { "name": "Roteiros e Visitas", "description": "Operações para agendamento, consulta e execução de visitas." }
+  "api.doc.v1.section.sync.title": { "name": "Sincronização (Legado)", "description": "Endpoints legados para sincronização de dados." }
+
+global_parameters:
+  X-AGILE-CLIENT:
+    name: 'X-AGILE-CLIENT'
+    in: 'header'
+    required: true
+    description: 'Identifica a origem da requisição. **Valor fixo: "EXTERNAL_APP"**.'
+    schema: { type: 'string', default: 'EXTERNAL_APP' }
+  Accept-Version:
+    name: 'Accept-Version'
+    in: 'header'
+    description: 'Informa a versão da API v3 (formato `YYYY-MM-DD`). Não é necessário para v1/v2.'
+    schema: { type: 'string', example: '2020-02-26' }

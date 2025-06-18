@@ -1,0 +1,17 @@
+# Arquivo .gitignore
+
+# Ambiente virtual do Python
+.venv/
+venv/
+
+# Arquivos de cache do Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Pastas de output geradas pelo script
+docs/optimized/
+
+# Arquivos de sistema operacional
+.DS_Store
+Thumbs.db
